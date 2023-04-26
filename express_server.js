@@ -15,6 +15,7 @@ app.use(cookieSession({
   keys: ['secret']
 }));
 
+
 //Homepage
 app.get('/', (req, res) => {
   //tells user where to login
@@ -24,7 +25,6 @@ app.get('/', (req, res) => {
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
-
 
 app.get('/urls', (req, res) => {
   const userID = req.session.user_id; //only logged in users will have a cookie
@@ -43,7 +43,7 @@ app.get('/urls', (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-//If user is not logged in. Redirects to login 
+//If user is not logged in. Redirects to login page
 app.get('/urls/new', (req, res) => {
   const userID = req.session.user_id;
 
@@ -58,7 +58,6 @@ app.get('/urls/new', (req, res) => {
 
   res.render('urls_new', templateVars);
 });
-
 
 app.get('/urls/:id', (req, res) => {
   const loggedInUser = req.session.user_id;
@@ -112,7 +111,7 @@ app.post('/urls/:id', (req, res) => {
   res.redirect('/urls');
 });
 
-//Checks if the user logged in before adding a url into the database
+//Checks if the user is logged in before adding a url into the database
 app.post('/urls', (req, res) => {
   const userID = req.session.user_id;
 
@@ -131,23 +130,23 @@ app.post('/urls', (req, res) => {
   res.redirect(`/urls/${uniqueID}`);
 });
 
-//handles short URL does not exist in the database
+//handles short URL that does not exist in the database
 app.get('/u/:id', (req, res) => {
   const url = urlDatabase[req.params.id];
 
   res.redirect(url.longURL);
 });
 
-//deletes current url
+//deletes the current url
 app.post('/urls/:id/delete', (req, res) => {
   const url = urlDatabase[req.params.id];
   const userID = req.session.user_id;
 
-  //check if  ID is in the database
+  //check if the ID is in the database
   if (!urlDatabase[req.params.id]) {
     return res.status(400).send('<p>The ID does not exist.</p>');
   }
-  //check user is logged in
+  //check if user is logged in
   if (!userID) {
     return res.status(400).send('<h3>Please login to continue.</h3> Login <a href="/login">here</a>');
   }
@@ -160,7 +159,7 @@ app.post('/urls/:id/delete', (req, res) => {
   res.redirect('/urls');
 });
 
-//Registering users (RU)
+//Registering users
 app.get('/register', (req, res) => {
   const userID = req.session.user_id;
   const user = users[userID];
@@ -187,7 +186,7 @@ app.get('/login', (req, res) => {
   res.render('urls_login', templateVars);
 });
 
-//Register post endpoint (EP)
+//Register post endpoint
 app.post('/register', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -214,6 +213,7 @@ app.post('/register', (req, res) => {
   req.session.user_id = userID;
   res.redirect('/urls');
 });
+
 
 //Creating cookies
 app.post('/login', (req, res) => {
@@ -244,7 +244,6 @@ app.post('/logout', (req, res) => {
   res.redirect('/login');
 });
 
-//listening
 app.listen(PORT, () => {
   console.log(`Example app listening on port: ${PORT}!`);
 });
