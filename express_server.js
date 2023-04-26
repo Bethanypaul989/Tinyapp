@@ -16,7 +16,7 @@ app.use(cookieSession({
 }));
 
 
-//Homepage
+//Homepage. (HP)
 app.get('/', (req, res) => {
   //tells user where to login
   res.send('<h1>Welcome to the home page!</h1> Please login <a href="/login">here<a/>');
@@ -69,12 +69,12 @@ app.get('/urls/:id', (req, res) => {
     user: user
   };
 
-  //checks if the user is logged in
+  //checks if  user is logged in
   if (!loggedInUser) {
     return res.status(401).send('<h3>Make sure you are logged in!</h3> Login <a href="/login">here</a>');
   }
 
-  //checks if the user owns the url
+  //checks if user owns the url
   if (url.userID !== loggedInUser) {
    return res.status(401).send('<h2>Unathorized to view this page<h2>');
   }
@@ -111,7 +111,7 @@ app.post('/urls/:id', (req, res) => {
   res.redirect('/urls');
 });
 
-//Checks if the user is logged in before adding a url into the database
+//Checks if user is logged in before adding a url into the database ( U = DB )
 app.post('/urls', (req, res) => {
   const userID = req.session.user_id;
 
@@ -142,7 +142,7 @@ app.post('/urls/:id/delete', (req, res) => {
   const url = urlDatabase[req.params.id];
   const userID = req.session.user_id;
 
-  //check if the ID is in the database
+  //check if the ID is in the database( ID = DB)
   if (!urlDatabase[req.params.id]) {
     return res.status(400).send('<p>The ID does not exist.</p>');
   }
@@ -159,7 +159,7 @@ app.post('/urls/:id/delete', (req, res) => {
   res.redirect('/urls');
 });
 
-//Registering users
+//Registering users (RU)
 app.get('/register', (req, res) => {
   const userID = req.session.user_id;
   const user = users[userID];
@@ -186,7 +186,7 @@ app.get('/login', (req, res) => {
   res.render('urls_login', templateVars);
 });
 
-//Register post endpoint
+//Register post endpoint (REP)
 app.post('/register', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -215,7 +215,7 @@ app.post('/register', (req, res) => {
 });
 
 
-//Creating cookies
+//Creating cookies (CC)
 app.post('/login', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -238,7 +238,7 @@ app.post('/login', (req, res) => {
   res.redirect('/urls');
 });
 
-//Clearing cookies
+//Clearing cookies (/CC)
 app.post('/logout', (req, res) => {
   req.session = null;
   res.redirect('/login');
