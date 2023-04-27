@@ -196,7 +196,6 @@ app.post('/register', (req, res) => {
   }
 
   const user = getUserByEmail(email, users);
-  console.log('user', user);
   if (user) {
     return res.status(400).send('That email is alredy in use. Please provide a different email.');
   }
