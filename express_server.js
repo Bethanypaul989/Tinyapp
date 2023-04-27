@@ -59,16 +59,6 @@ app.get('/urls/new', (req, res) => {
     res.render('urls_new', templateVars);
 });
 
-app.get('/urls/:id', (req, res) => {
-    const loggedInUser = req.session.user_id;
-    const user = users[loggedInUser]; //accessing users database
-    const url = urlDatabase[req.params.id]; //accessing urlDatabase object
-    const templateVars = {
-        id: req.params.id,
-        longURL: urlDatabase[req.params.id].longURL,
-        user: user
-    };
-
     //checks if the user is logged in
     if (!loggedInUser) {
         return res.status(401).send('<h3>Make sure you are logged in!</h3> Login <a href="/login">here</a>');
