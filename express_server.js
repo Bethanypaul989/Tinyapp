@@ -85,6 +85,41 @@ app.get('/urls/:id', (req, res) => {
     res.render('urls_show', templateVars);
 });
 
+app.get("/urls/:shortURL", (req, res) => {
+  const userId = req.session.user_id;
+  if (!userId) {
+    return res.status(401).send("<h1>You Are Not Logged In <a href='/login'>Go Back</a></h1>");
+  }
+
+  const shortURL = req.params.shortURL;
+  const urlObj = urlDatabase[shortURL];
+  if (!urlObj) {
+    return res.status(400).send("URL Not Found");
+  }
+  
+  if (urlObj.userID !== userId) {
+    return res.status(403).send("You Do Not Have Access");
+  }
+
+  const longURL = urlObj.longURL;
+  const user = users[userId];
+  const templateVars = { shortURL, longURL, user };
+
+  res.render("urls_show", templateVars);
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
+  const url = urlDatabase[shortURL];
+
+  if (!url) {
+    return res.status(404).send("Page Not Found");
+  }
+
+  res.redirect(url.longURL);
+});
+
+
 app.post('/urls/:id', (req, res) => {
     const url = urlDatabase[req.params.id];
     const userID = req.session.user_id;
