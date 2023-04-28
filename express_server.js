@@ -22,9 +22,7 @@ app.get('/', (req, res) => {
     res.send('<h1>Welcome to the home page!</h1> Please login <a href="/login">here<a/>');
 });
 
-app.get('/urls.json', (req, res) => {
-    res.json(urlDatabase);
-});
+
 
 app.get('/urls', (req, res) => {
     const userID = req.session.user_id; //only logged in users will have a cookie
@@ -59,6 +57,20 @@ app.get('/urls/new', (req, res) => {
     res.render('urls_new', templateVars);
 });
 
+app.get('/urls/:id', (req, res) => {
+    const loggedInUser = req.session.user_id;
+    const user = users[loggedInUser]; //accessing users database
+    const url = urlDatabase[req.params.id]; //accessing urlDatabase object
+    console.log('url', url);
+    if (url === undefined) {
+        return res.status(401).send('<h3>This short URL does not exist ! </h3>');
+    }
+    const templateVars = {
+        id: req.params.id,
+        longURL: url.longURL,
+        user: user
+    };
+
     //checks if the user is logged in
     if (!loggedInUser) {
         return res.status(401).send('<h3>Make sure you are logged in!</h3> Login <a href="/login">here</a>');
@@ -74,41 +86,6 @@ app.get('/urls/new', (req, res) => {
     }
     res.render('urls_show', templateVars);
 });
-
-app.get("/urls/:shortURL", (req, res) => {
-  const userId = req.session.user_id;
-  if (!userId) {
-    return res.status(401).send("<h1>You Are Not Logged In <a href='/login'>Go Back</a></h1>");
-  }
-
-  const shortURL = req.params.shortURL;
-  const urlObj = urlDatabase[shortURL];
-  if (!urlObj) {
-    return res.status(400).send("URL Not Found");
-  }
-  
-  if (urlObj.userID !== userId) {
-    return res.status(403).send("You Do Not Have Access");
-  }
-
-  const longURL = urlObj.longURL;
-  const user = users[userId];
-  const templateVars = { shortURL, longURL, user };
-
-  res.render("urls_show", templateVars);
-});
-
-app.get("/u/:shortURL", (req, res) => {
-  const shortURL = req.params.shortURL;
-  const url = urlDatabase[shortURL];
-
-  if (!url) {
-    return res.status(404).send("Page Not Found");
-  }
-
-  res.redirect(url.longURL);
-});
-
 
 app.post('/urls/:id', (req, res) => {
     const url = urlDatabase[req.params.id];
@@ -155,10 +132,13 @@ app.post('/urls', (req, res) => {
     res.redirect(`/urls/${uniqueID}`);
 });
 
-//handles short URL that does not exist in the database
 app.get('/u/:id', (req, res) => {
     const url = urlDatabase[req.params.id];
-
+console.log('url', url);
+if (url === undefined) {
+    // short url undefined
+    return res.status(400).send('<p>This Url does not exist!</p>');
+}
     res.redirect(url.longURL);
 });
 
@@ -221,7 +201,6 @@ app.post('/register', (req, res) => {
     }
 
     const user = getUserByEmail(email, users);
-    console.log('user', user);
     if (user) {
         return res.status(400).send('That email is alredy in use. Please provide a different email.');
     }
